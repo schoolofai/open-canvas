@@ -16,6 +16,7 @@ import { OpenCanvasGraphAnnotation } from "./state.js";
 import { summarizer } from "./nodes/summarizer.js";
 import { graph as webSearchGraph } from "../web-search/index.js";
 import { createAIMessageFromWebResults } from "../utils.js";
+import { DEFAULT_AGENT_CONFIG } from "./default-config.js";
 
 const routeNode = (state: typeof OpenCanvasGraphAnnotation.State) => {
   if (!state.next) {
@@ -159,4 +160,7 @@ const builder = new StateGraph(OpenCanvasGraphAnnotation)
   .addEdge("generateTitle", END)
   .addEdge("summarizer", END);
 
-export const graph = builder.compile().withConfig({ runName: "open_canvas" });
+export const graph = builder.compile().withConfig({ 
+  runName: "open_canvas",
+  configurable: DEFAULT_AGENT_CONFIG 
+});

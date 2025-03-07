@@ -27,6 +27,7 @@ import {
   LANGCHAIN_USER_ONLY_MODELS,
 } from "@opencanvas/shared/models";
 import { createClient, Session, User } from "@supabase/supabase-js";
+import { mergeWithDefaultConfig } from "./open-canvas/default-config.js";
 
 export const formatReflections = (
   reflections: Reflections,
@@ -178,10 +179,16 @@ export const getModelConfig = (
   apiKey?: string;
   baseUrl?: string;
 } => {
-  const customModelName = config.configurable?.customModelName as string;
-  if (!customModelName) throw new Error("Model name is missing in config.");
-
-  const modelConfig = config.configurable?.modelConfig as CustomModelConfig;
+  // Merge with default config to ensure all required fields exist
+  const configurable = mergeWithDefaultConfig(config.configurable);
+  
+  // Update the config object to include the merged configurable
+  config.configurable = configurable;
+  
+  const customModelName = configurable.customModelName;
+  // We no longer need to throw an error here as we always have a default
+  
+  const modelConfig = configurable.modelConfig;
 
   if (customModelName.startsWith("azure/")) {
     let actualModelName = customModelName.replace("azure/", "");

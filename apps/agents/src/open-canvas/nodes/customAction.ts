@@ -26,6 +26,7 @@ import {
   OpenCanvasGraphAnnotation,
   OpenCanvasGraphReturnType,
 } from "../state.js";
+import { DEFAULT_AGENT_CONFIG } from "../default-config.js";
 
 const formatMessages = (messages: BaseMessage[]): string =>
   messages
@@ -48,14 +49,16 @@ export const customAction = async (
   });
 
   const store = ensureStoreInConfig(config);
-  const assistantId = config.configurable?.assistant_id;
-  const userId = config.configurable?.supabase_user_id;
-  if (!assistantId) {
-    throw new Error("`assistant_id` not found in configurable");
+  const assistantId = config.configurable?.assistant_id || DEFAULT_AGENT_CONFIG.assistant_id;
+  const userId = config.configurable?.supabase_user_id || DEFAULT_AGENT_CONFIG.supabase_user_id;
+  
+  if (assistantId === DEFAULT_AGENT_CONFIG.assistant_id) {
+    console.warn("Using default assistant_id");
   }
-  if (!userId) {
-    throw new Error("`user.id` not found in configurable");
+  if (userId === DEFAULT_AGENT_CONFIG.supabase_user_id) {
+    console.warn("Using default supabase_user_id");
   }
+  
   const customActionsNamespace = ["custom_actions", userId];
   const actionsKey = "actions";
 
