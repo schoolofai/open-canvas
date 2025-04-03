@@ -1,5 +1,6 @@
 import { DEFAULT_MODEL_CONFIG, DEFAULT_MODEL_NAME } from "@opencanvas/shared/models";
 import { OpenCanvasAgentConfig } from "./config-schema";
+import { PromptTemplate } from "@langchain/core/prompts";
 
 /**
  * Default configuration for the Open Canvas agent.
@@ -19,7 +20,9 @@ export const DEFAULT_AGENT_CONFIG: OpenCanvasAgentConfig = {
   useDefaultConfigOnly: false,
   
   // Content configuration
-  systemPrompt: "You are a helpful AI assistant that helps users write and edit documents.",
+  systemPrompt: PromptTemplate.fromTemplate(
+    "You are a helpful AI assistant that helps users write and edit documents."
+  ),
 };
 
 /**
