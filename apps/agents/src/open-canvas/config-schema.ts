@@ -1,4 +1,5 @@
 import { CustomModelConfig } from "@opencanvas/shared/types";
+import { PromptTemplate } from "@langchain/core/prompts";
 
 /**
  * Schema for the Open Canvas agent configuration.
@@ -20,5 +21,5 @@ export type OpenCanvasAgentConfig = {
   useDefaultConfigOnly: boolean;
   
   // Content configuration
-  systemPrompt: string;
+  systemPrompt: PromptTemplate;
 }; 

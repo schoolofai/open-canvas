@@ -28,6 +28,7 @@ import {
 } from "@opencanvas/shared/models";
 import { createClient, Session, User } from "@supabase/supabase-js";
 import { mergeWithDefaultConfig } from "./open-canvas/default-config.js";
+import { PromptTemplate } from "@langchain/core/prompts";
 
 export const formatReflections = (
   reflections: Reflections,
@@ -310,8 +311,8 @@ export const getModelConfig = (
 
 export function optionallyGetSystemPromptFromConfig(
   config: LangGraphRunnableConfig
-): string | undefined {
-  return config.configurable?.systemPrompt as string | undefined;
+): PromptTemplate | undefined {
+  return config.configurable?.systemPrompt as PromptTemplate | undefined;
 }
 
 async function getUserFromConfig(

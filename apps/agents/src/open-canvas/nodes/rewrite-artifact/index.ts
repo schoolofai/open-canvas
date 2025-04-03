@@ -58,6 +58,7 @@ export const rewriteArtifact = async (
   const fullSystemPrompt = userSystemPrompt
     ? `${userSystemPrompt}\n${formattedPrompt}`
     : formattedPrompt;
+  console.log("Final Prompt for Model:", fullSystemPrompt);
 
   const contextDocumentMessages = await createContextDocumentMessages(config);
   const isO1MiniModel = isUsingO1MiniModel(config);

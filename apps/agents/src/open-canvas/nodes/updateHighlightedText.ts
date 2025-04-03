@@ -122,10 +122,47 @@ export const updateHighlightedText = async (
     throw new Error("Previous content not found");
   }
 
-  if (!fullMarkdown.includes(markdownBlock)) {
+  console.log("Full markdown:", JSON.stringify(fullMarkdown));
+  console.log("Markdown block:", JSON.stringify(markdownBlock));
+
+  // Add normalization function
+  const normalizeString = (str: string) => 
+    str.replace(/\r\n/g, '\n')
+       .replace(/\r/g, '\n')
+       // Remove any leading spaces at the start of each line
+       .split('\n')
+       .map(line => line.trimStart())
+       .join('\n')
+       .trim();
+
+  const normalizedFullMarkdown = normalizeString(fullMarkdown);
+  const normalizedMarkdownBlock = normalizeString(markdownBlock);
+
+  // Add debug logging to see exact content
+  console.log("Normalized full markdown:", JSON.stringify(normalizedFullMarkdown));
+  console.log("Normalized markdown block:", JSON.stringify(normalizedMarkdownBlock));
+
+  if (!normalizedFullMarkdown.includes(normalizedMarkdownBlock)) {
+    // Try to find the content with fuzzy matching
+    const lines = normalizedMarkdownBlock.split('\n');
+    const firstLine = lines[0];
+    if (!normalizedFullMarkdown.includes(firstLine)) {
+      console.log("Even first line not found:", firstLine);
+      throw new Error("Selected text not found in current content");
+    }
+    
+    // Find the position of the first line and extract the surrounding context
+    const startIndex = normalizedFullMarkdown.indexOf(firstLine);
+    const contextAround = normalizedFullMarkdown.slice(
+      Math.max(0, startIndex - 100),
+      Math.min(normalizedFullMarkdown.length, startIndex + firstLine.length + 100)
+    );
+    console.log("Context around first line:", JSON.stringify(contextAround));
     throw new Error("Selected text not found in current content");
   }
-  const newFullMarkdown = fullMarkdown.replace(markdownBlock, responseContent);
+
+  // Use normalized strings for replacement to maintain consistency
+  const newFullMarkdown = normalizedFullMarkdown.replace(normalizedMarkdownBlock, normalizeString(responseContent));
 
   const updatedArtifactContent: ArtifactMarkdownV3 = {
     ...prevContent,
