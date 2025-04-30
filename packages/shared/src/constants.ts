@@ -22,6 +22,8 @@ export const DEFAULT_INPUTS = {
   customQuickActionId: undefined,
   webSearchEnabled: undefined,
   webSearchResults: undefined,
+  isStructured: false,
+  type: undefined,
 };
 
 export const PROGRAMMING_LANGUAGES: Array<{

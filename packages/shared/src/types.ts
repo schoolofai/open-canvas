@@ -203,6 +203,8 @@ export type ExaMetadata = {
 
 export type SearchResult = DocumentInterface<ExaMetadata>;
 
+export type StructuredArtifactType = "term" | "weekly" | "daily";
+
 export interface GraphInput {
   messages?: Record<string, any>[];
 
@@ -226,4 +228,7 @@ export interface GraphInput {
 
   webSearchEnabled?: boolean;
   webSearchResults?: SearchResult[];
+
+  isStructured?: boolean;
+  type?: StructuredArtifactType;
 }

@@ -2,6 +2,7 @@ import { Command, END, Send, START, StateGraph } from "@langchain/langgraph";
 import { DEFAULT_INPUTS } from "@opencanvas/shared/constants";
 import { customAction } from "./nodes/customAction.js";
 import { generateArtifact } from "./nodes/generate-artifact/index.js";
+import { generateArtifactStructured } from "./nodes/generate-artifact-structured/index.js";
 import { generateFollowup } from "./nodes/generateFollowup.js";
 import { generatePath } from "./nodes/generate-path/index.js";
 import { reflectNode } from "./nodes/reflect.js";
@@ -118,6 +119,7 @@ const builder = new StateGraph(OpenCanvasGraphAnnotation)
   .addNode("updateArtifact", updateArtifact)
   .addNode("updateHighlightedText", updateHighlightedText)
   .addNode("generateArtifact", generateArtifact)
+  .addNode("generateArtifactStructured", generateArtifactStructured)
   .addNode("customAction", customAction)
   .addNode("generateFollowup", generateFollowup)
   .addNode("cleanState", cleanState)
@@ -133,6 +135,7 @@ const builder = new StateGraph(OpenCanvasGraphAnnotation)
     "rewriteCodeArtifactTheme",
     "replyToGeneralInput",
     "generateArtifact",
+    "generateArtifactStructured",
     "rewriteArtifact",
     "customAction",
     "updateHighlightedText",
@@ -140,6 +143,7 @@ const builder = new StateGraph(OpenCanvasGraphAnnotation)
   ])
   // Edges
   .addEdge("generateArtifact", "generateFollowup")
+  .addEdge("generateArtifactStructured", "generateFollowup")
   .addEdge("updateArtifact", "generateFollowup")
   .addEdge("updateHighlightedText", "generateFollowup")
   .addEdge("rewriteArtifact", "generateFollowup")

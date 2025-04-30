@@ -133,6 +133,14 @@ export const OpenCanvasGraphAnnotation = Annotation.Root({
    * The search results to include in context.
    */
   webSearchResults: Annotation<SearchResult[] | undefined>,
+  /**
+   * Whether or not the artifact should be structured
+   */
+  isStructured: Annotation<boolean>,
+  /**
+   * The type of structured artifact (term, weekly, or daily)
+   */
+  type: Annotation<"term" | "weekly" | "daily" | undefined>,
 });
 
 export type OpenCanvasGraphReturnType = Partial<
