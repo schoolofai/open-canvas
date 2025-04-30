@@ -3,7 +3,6 @@ import {
   getFormattedReflections,
   getModelConfig,
   getModelFromConfig,
-  isUsingO1MiniModel,
   optionallyGetSystemPromptFromConfig,
 } from "../../../utils.js";
 import { ArtifactV3 } from "@opencanvas/shared/types";
@@ -12,9 +11,8 @@ import {
   OpenCanvasGraphAnnotation,
   OpenCanvasGraphReturnType,
 } from "../../state.js";
-import { ARTIFACT_TOOL_SCHEMA } from "./schemas.js";
-import { createArtifactContent, formatNewArtifactPrompt } from "./utils.js";
-import { z } from "zod";
+import { ARTIFACT_TOOL_SCHEMA, TermPlanSetSchema } from "./schemas.js";
+import { formatNewArtifactPrompt } from "./utils.js";
 
 /**
  * Generate a new structured artifact based on the user's query.
@@ -26,53 +24,46 @@ export const generateArtifactStructured = async (
   const { modelName } = getModelConfig(config, {
     isToolCalling: true,
   });
-  const smallModel = await getModelFromConfig(config, {
-    temperature: 0.5,
+  
+  // Create model with structured output
+  const model = await getModelFromConfig(config, {
+    temperature: 0,
     isToolCalling: true,
   });
+  const structuredModel = model.withStructuredOutput(TermPlanSetSchema);
 
-  const modelWithArtifactTool = smallModel.bindTools(
-    [
-      {
-        name: "generate_artifact",
-        description: ARTIFACT_TOOL_SCHEMA.description,
-        schema: ARTIFACT_TOOL_SCHEMA,
-      },
-    ],
-    {
-      tool_choice: "generate_artifact",
-    }
-  );
-
+  // Get existing messages and prompts from state
+  const contextDocumentMessages = await createContextDocumentMessages(config);
+  const userSystemPrompt = optionallyGetSystemPromptFromConfig(config);
   const memoriesAsString = await getFormattedReflections(config);
+  
+  // Use existing prompt handling
   const formattedNewArtifactPrompt = formatNewArtifactPrompt(
     memoriesAsString,
     modelName
   );
 
-  const userSystemPrompt = optionallyGetSystemPromptFromConfig(config);
   const fullSystemPrompt = userSystemPrompt
     ? `${userSystemPrompt}\n${formattedNewArtifactPrompt}`
     : formattedNewArtifactPrompt;
 
-  const contextDocumentMessages = await createContextDocumentMessages(config);
-  const isO1MiniModel = isUsingO1MiniModel(config);
-  const response = await modelWithArtifactTool.invoke(
+  // Generate structured output
+  const structuredResponse = await structuredModel.invoke(
     [
-      { role: isO1MiniModel ? "user" : "system", content: fullSystemPrompt },
+      { role: "system", content: fullSystemPrompt },
       ...contextDocumentMessages,
       ...state._messages,
-    ],
-    { runName: "generate_artifact_structured" }
+    ]
   );
-  const args = response.tool_calls?.[0].args as
-    | z.infer<typeof ARTIFACT_TOOL_SCHEMA>
-    | undefined;
-  if (!args) {
-    throw new Error("No args found in response");
-  }
 
-  const newArtifactContent = createArtifactContent(args);
+  // Create artifact with JSON structure
+  const newArtifactContent = {
+    index: 1,
+    type: "text" as const,
+    title: `Term Plan: ${structuredResponse.terms[0]?.term_name || 'New Plan'}`,
+    fullMarkdown: JSON.stringify(structuredResponse, null, 2), // Keep as formatted JSON
+  };
+
   const newArtifact: ArtifactV3 = {
     currentIndex: 1,
     contents: [newArtifactContent],
