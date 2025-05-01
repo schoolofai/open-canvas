@@ -23,6 +23,14 @@ const TermPlanSchema = z.object({
 export const TermPlanSetSchema = z.object({
   total_terms: z.number().int(),
   terms: z.array(TermPlanSchema)
+}).superRefine((data, ctx) => {
+  if (data.terms.length !== data.total_terms) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `Expected ${data.total_terms} terms but got ${data.terms.length} terms`,
+      path: ['terms']
+    });
+  }
 });
 
 export const ARTIFACT_TOOL_SCHEMA = z.object({
