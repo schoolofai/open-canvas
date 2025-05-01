@@ -29,7 +29,7 @@ export const createArtifactContent = (
       index: 1,
       type: "code",
       title: toolCall?.title,
-      code: toolCall?.artifact,
+      code: JSON.stringify(toolCall?.artifact, null, 2),
       language: toolCall?.language as ProgrammingLanguageOptions,
     };
   }
@@ -38,6 +38,6 @@ export const createArtifactContent = (
     index: 1,
     type: "text",
     title: toolCall?.title,
-    fullMarkdown: toolCall?.artifact,
+    fullMarkdown: JSON.stringify(toolCall?.artifact, null, 2),
   };
 }; 

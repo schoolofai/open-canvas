@@ -11,7 +11,7 @@ import {
   OpenCanvasGraphAnnotation,
   OpenCanvasGraphReturnType,
 } from "../../state.js";
-import { ARTIFACT_TOOL_SCHEMA, TermPlanSetSchema } from "./schemas.js";
+import { TermPlanSetSchema } from "./schemas.js";
 import { formatNewArtifactPrompt } from "./utils.js";
 
 /**
