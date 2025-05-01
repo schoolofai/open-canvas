@@ -59,10 +59,10 @@ async function dynamicDeterminePathFunc({
         : NO_ARTIFACT_PROMPT
     );
 
-  const artifactRoute = currentArtifactContent
-    ? "rewriteArtifact"
-    : state.isStructured
+  const artifactRoute = state.isStructured
     ? "generateArtifactStructured"
+    : currentArtifactContent
+    ? "rewriteArtifact"
     : "generateArtifact";
 
   const model = await getModelFromConfig(config, {
