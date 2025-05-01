@@ -53,6 +53,16 @@ export async function generatePath(
     }
   }
 
+  // Check for isStructured first
+  if (state.isStructured) {
+    return {
+      next: "generateArtifactStructured",
+      ...(newMessages.length
+        ? { messages: newMessages, _messages: newMessages }
+        : {}),
+    };
+  }
+
   if (state.highlightedCode) {
     return {
       next: "updateArtifact",
